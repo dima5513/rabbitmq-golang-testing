@@ -1,10 +1,8 @@
 package main
 
-import (
-	parsers "testing/rabbitmq/internal/parsers"
-)
+import "testing/rabbitmq/internal/parsers"
 
 func main() {
 	
-	parsers.ParseMoovies()
+	parsers.ParseMovies()
 }

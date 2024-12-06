@@ -1,4 +1,4 @@
-FROM FROM golang:1.20-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 # Move to working directory (/build).
 WORKDIR /build
@@ -8,18 +8,18 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy the code into the container.
-COPY ./internal/transport/rabbit/publisher.go .
+COPY ./ .
 
 # Set necessary environment variables needed 
 # for our image and build the sender.
 ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
-RUN go build -ldflags="-s -w" -o publisher .
+RUN go build -ldflags="-s -w" -o parsers_api ./cmd/main.go
 
 FROM scratch
 
 # Copy binary and config files from /build 
 # to root folder of scratch container.
-COPY --from=builder ["/build/publisher", "/"]
+COPY --from=builder ["/build/parsers_api", "/"]
 
 # Command to run when starting the container.
-ENTRYPOINT ["/publisher"]
+ENTRYPOINT ["/parsers_api"]
