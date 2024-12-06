@@ -2,12 +2,15 @@ version: "3.9"
 
 services:
   consumer:
+    # env_file:
+    #   - path: "./docker/docker-compose.env"
+    #   - required: true
     container_name: consumer
     build:
       context: .
-      dockerfile: Dockerfile-consumer
+      dockerfile: ./docker/consumer/Dockerfile
     environment:
-      AMQP_SERVER_URL: amqp://guest:guest@message-broker:5672/
+      - AMQP_SERVER_URL=${AMQP_SERVER_URL}
     restart: always
     networks:
       - dev-network
@@ -16,14 +19,17 @@ services:
       - message-broker
   # Create service with Fiber sender.
   sender:
+    # env_file:
+    #   - path: "./docker/docker-compose.env"
+    #   - required: true
     container_name: sender
     ports:
       - 3000:3000
     build:
       context: .
-      dockerfile: Dockerfile-sender
+      dockerfile: ./docker/publisher/Dockerfile
     environment:
-      AMQP_SERVER_URL: amqp://guest:guest@message-broker:5672/
+      - AMQP_SERVER_URL=${AMQP_SERVER_URL}
     restart: always
     networks:
       - dev-network
