@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -32,8 +33,17 @@ func main () {
 
 }
 
-func ReceiveResult (title string) {
-	fmt.Println(title)
+func ReceiveResult (moovie Moovie) {
+
+	b, err := json.Marshal(moovie)
+
+    if err != nil {
+        fmt.Println("Unable to convert the struct to a JSON string")
+    } else {
+        // convert []byte to a string type and then print
+        fmt.Println(string(b))
+    }
+	fmt.Println(moovie)
 }
 
 
@@ -58,9 +68,12 @@ func parseMovies(g *geziyor.Geziyor, r *client.Response) {
 				description = strings.ReplaceAll(description, "\t", "")
 				description = strings.ReplaceAll(description, "\n", "")
 				description = strings.TrimSpace(description)
-
-				ReceiveResult(strings.TrimSpace(s.Find("span.movie_card_header.title").Text()))
-				
+				ReceiveResult(Moovie{
+					Title:        strings.TrimSpace(s.Find("span.movie_card_header.title").Text()), 
+					Subtitle:    strings.TrimSpace(s.Find("span.sub_title.shedule_movie_text").Text()), 
+					Session:    sessions, 
+					Description: description, 
+			})
 			})
 		}
 	})
