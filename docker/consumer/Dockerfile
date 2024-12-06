@@ -10,7 +10,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy the code into the container.
-COPY ./consumer/main.go .
+COPY ./internal/transport/rabbit/consumer.go .
 
 # Set necessary environment variables needed 
 # for our image and build the consumer.

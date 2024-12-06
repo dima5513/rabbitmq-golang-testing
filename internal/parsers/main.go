@@ -1,9 +1,10 @@
-package main
+package parsers
 
 import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	rabbit "testing/rabbitmq/internal/transport/rabbit"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/geziyor/geziyor"
@@ -18,9 +19,7 @@ type Moovie struct {
 }
 
 
-func main () {
-	// moovies := new([]Moovie)
-	// var Titles = make(chan string, 10)
+func ParseMoovies () {
 
 	geziyor.NewGeziyor(&geziyor.Options{
 		StartURLs: []string{"https://kinoteatr.ru/raspisanie-kinoteatrov/city/#"},
@@ -29,21 +28,20 @@ func main () {
 		
 	}).Start()
 
-
-
 }
 
 func ReceiveResult (moovie Moovie) {
 
-	b, err := json.Marshal(moovie)
+	 b,err := json.Marshal(moovie)
 
     if err != nil {
         fmt.Println("Unable to convert the struct to a JSON string")
     } else {
-        // convert []byte to a string type and then print
-        fmt.Println(string(b))
+		// rabbit.PrintEnv()
+		rabbit.PublishMessage(string(b))
     }
-	fmt.Println(moovie)
+	
+	
 }
 
 

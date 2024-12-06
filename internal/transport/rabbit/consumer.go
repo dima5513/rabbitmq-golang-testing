@@ -1,15 +1,15 @@
 // ./consumer/main.go
 
-package main
+package rabbit
 
 import (
-    "log"
-    "os"
+	"log"
+	"os"
 
-    "github.com/streadway/amqp"
+	"github.com/streadway/amqp"
 )
 
-func main() {
+func Consume() {
     // Define RabbitMQ server URL.
     amqpServerURL := os.Getenv("AMQP_SERVER_URL")
 

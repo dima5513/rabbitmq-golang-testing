@@ -1,21 +1,26 @@
-package main
+package rabbit
 
 import (
-	"log"
-	"os"
+	"fmt"
+	"testing/rabbitmq/configs"
 
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"github.com/streadway/amqp"
 )
 
 
-func main () {
-    amqpServerURL := os.Getenv("AMQP_SERVER_URL")
 
+func PrintEnv() {
+    rabbitConfig := configs.NewRabbitConfig()
+    fmt.Printf("os env print: %s", rabbitConfig.AmqpServerURL)
+    
+}
 
+func PublishMessage (message string) {
+
+    rabbitConfig := configs.NewRabbitConfig()
+    fmt.Println(rabbitConfig.AmqpServerURL)
     // Create a new RabbitMQ connection.
-    connectRabbitMQ, err := amqp.Dial(amqpServerURL)
+    connectRabbitMQ, err := amqp.Dial(rabbitConfig.AmqpServerURL)
     if err != nil {
         panic(err)
     }
@@ -25,6 +30,7 @@ func main () {
     // instance over the connection we have already
     // established.
     channelRabbitMQ, err := connectRabbitMQ.Channel()
+
     if err != nil {
         panic(err)
     }
@@ -46,34 +52,19 @@ func main () {
         panic(err)
     }
 
+    rabbitMessage := amqp.Publishing{
+        ContentType: "text/plain",
+        Body:        []byte(message),
+    }
 
-    app := echo.New()
-
-    app.Use(middleware.Logger())
-
-
-     // Add route.
-     app.GET("/send", func(c echo.Context) error {
-      
-        //  Create a message to publish.
-         message := amqp.Publishing{
-            ContentType: "text/plain",
-            Body:        []byte(c.QueryParam("msg")),
-        }
-
-        // Attempt to publish a message to the queue.
-        if err := channelRabbitMQ.Publish(
-            "",              // exchange
-            "QueueService1", // queue name
-            false,           // mandatory
-            false,           // immediate
-            message,         // message to publish
-        ); err != nil {
-            return err
-        }
-        return nil
-     })
-
-    // Start Fiber API server.
-    log.Fatal(app.Start(":3000"))
+    if err := channelRabbitMQ.Publish(
+        "",              // exchange
+        "QueueService1", // queue name
+        false,           // mandatory
+        false,           // immediate
+        rabbitMessage,         // message to publish
+    ); err != nil {
+        
+    }
+    
 }

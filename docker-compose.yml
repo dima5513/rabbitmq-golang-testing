@@ -15,14 +15,14 @@ services:
     networks:
       - dev-network
     depends_on:
-      - sender
-      - message-broker
+      - publisher
+      - rabbit
   # Create service with Fiber sender.
-  sender:
+  publisher:
     # env_file:
     #   - path: "./docker/docker-compose.env"
     #   - required: true
-    container_name: sender
+    container_name: publisher
     ports:
       - 3000:3000
     build:
@@ -34,11 +34,11 @@ services:
     networks:
       - dev-network
     depends_on:
-      - message-broker
+      - rabbit
   # Create service with RabbitMQ.
-  message-broker:
+  rabbit:
     image: rabbitmq:3-management-alpine
-    container_name: message-broker
+    container_name: rabbit
     ports:
       - 5672:5672 # for sender and consumer connections
       - 15672:15672 # for serve RabbitMQ GUI
