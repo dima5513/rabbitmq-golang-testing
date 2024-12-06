@@ -11,7 +11,7 @@ import (
 	"github.com/geziyor/geziyor/client"
 	"github.com/geziyor/geziyor/export"
 )
-type Moovie struct {
+type Movie struct {
 	Title string  `json:"title"`   
 	Subtitle	string `json:"subtitle"`   
 	Session		[]string `json:"session"`    
@@ -19,7 +19,7 @@ type Moovie struct {
 }
 
 
-func ParseMoovies () {
+func ParseMovies () {
 
 	geziyor.NewGeziyor(&geziyor.Options{
 		StartURLs: []string{"https://kinoteatr.ru/raspisanie-kinoteatrov/city/#"},
@@ -30,24 +30,20 @@ func ParseMoovies () {
 
 }
 
-func ReceiveResult (moovie Moovie) {
+func ReceiveResult (movie Movie) {
 
-	 b,err := json.Marshal(moovie)
+	 b,err := json.Marshal(movie)
 
     if err != nil {
         fmt.Println("Unable to convert the struct to a JSON string")
     } else {
-		// rabbit.PrintEnv()
 		rabbit.PublishMessage(string(b))
     }
-	
 	
 }
 
 
 func parseMovies(g *geziyor.Geziyor, r *client.Response) {
-	
-
 
 	r.HTMLDoc.Find("div.shedule_movie").Each(func(i int, s *goquery.Selection) {
 		var sessions = strings.Split(s.Find(".shedule_session_time").Text(), " \n ")
@@ -66,7 +62,7 @@ func parseMovies(g *geziyor.Geziyor, r *client.Response) {
 				description = strings.ReplaceAll(description, "\t", "")
 				description = strings.ReplaceAll(description, "\n", "")
 				description = strings.TrimSpace(description)
-				ReceiveResult(Moovie{
+				ReceiveResult(Movie{
 					Title:        strings.TrimSpace(s.Find("span.movie_card_header.title").Text()), 
 					Subtitle:    strings.TrimSpace(s.Find("span.sub_title.shedule_movie_text").Text()), 
 					Session:    sessions, 

@@ -1,7 +1,6 @@
 package rabbit
 
 import (
-	"fmt"
 	"testing/rabbitmq/configs"
 
 	"github.com/streadway/amqp"
@@ -9,16 +8,10 @@ import (
 
 
 
-func PrintEnv() {
-    rabbitConfig := configs.NewRabbitConfig()
-    fmt.Printf("os env print: %s", rabbitConfig.AmqpServerURL)
-    
-}
 
 func PublishMessage (message string) {
 
     rabbitConfig := configs.NewRabbitConfig()
-    fmt.Println(rabbitConfig.AmqpServerURL)
     // Create a new RabbitMQ connection.
     connectRabbitMQ, err := amqp.Dial(rabbitConfig.AmqpServerURL)
     if err != nil {
